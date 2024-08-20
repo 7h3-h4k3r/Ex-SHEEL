@@ -1,6 +1,8 @@
 import subprocess
 import socket
 import threading
+import re 
+patten = r"cat ([a-z.]+)|ls| -[a|l]"
 # class Shell_server_log:
 #     def __init__(self,conn.add):
 #         print("") write a server log in feture 
@@ -18,9 +20,14 @@ class Shell_server_client_handle(threading.Thread):
                 if not data:
                     break
                 comment = data.decode().strip()
-                cmd = subprocess.run(comment,shell=True,capture_output=True,text=True)
-                self.conn.sendall(cmd.stdout.encode())
-                self.conn.send("rs#:".encode())
+                match = re.search(patten,comment)
+                if match: 
+                    # if(comment =="--help" or "-h"):if feture user manual  
+                    cmd = subprocess.run(comment,shell=True,capture_output=True,text=True)
+                    self.conn.sendall(cmd.stdout.encode())
+                    self.conn.send("rs#:".encode())
+                else:
+                    self.conn.sendall("[*] Invalide systax ....\nrs#:".encode())
             except:
                 pass
 HOST = ""
